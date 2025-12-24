@@ -1,3 +1,5 @@
+Flask==3.0.0
+Werkzeug==2.3.7
 asttokens==3.0.1
 colorama==0.4.6
 comm==0.2.3
@@ -28,7 +30,7 @@ prompt_toolkit==3.0.52
 psutil==7.2.0
 pure_eval==0.2.3
 Pygments==2.19.2
-pyparsing==3.3.1
+pyparsing==3.3.3
 python-dateutil==2.9.0.post0
 pytz==2025.2
 pyzmq==27.1.0
