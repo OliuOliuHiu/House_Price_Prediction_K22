@@ -90,5 +90,5 @@ def save_record(input_data, predicted_price):
         print(f"[!] Error saving to DB: {e}")
 
 
-if __name__ == '__main__':
-    app.run(debug=True)
+# if __name__ == '__main__':
+#     app.run(debug=True)
