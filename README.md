@@ -172,13 +172,6 @@ Model and scaler loaded successfully!
 
 3. View the predicted price displayed in USD
 
-### Using the API Directly
-
-**Endpoints:**
-- **Online:** `http://3.24.151.146:5000/predict`
-- **Local:** `http://localhost:5000/predict`
-
-
 ## 📈 Dataset Information
 
 **Source:** King County House Sales Dataset
@@ -201,44 +194,6 @@ Model and scaler loaded successfully!
 - 85 duplicate records (removed during preprocessing)
 - Outliers filtered: bedrooms ≤ 10, sqft_living ≤ 10,000, price ≤ $5,000,000
 
----
-
-## 🤖 Model Details
-
-### Training Process
-
-The model was trained using the following pipeline:
-
-1. **Data Cleaning:**
-   - Removed duplicate records based on property ID
-   - Filtered extreme outliers
-   - Type conversion and validation
-
-2. **Feature Engineering:**
-   - Selected 6 most relevant features
-   - Applied StandardScaler normalization
-   - Feature scaling for uniform distribution
-
-3. **Model Training:**
-   - Algorithm: Random Forest Regressor
-   - Number of trees: 100
-   - Train/Test split: 85% / 15%
-   - Cross-validation: 5-fold CV
-
-4. **Evaluation:**
-   - Cross-validation R² (mean): 0.5528
-   - Test set R²: 0.5703
-   - Model saved as pickle files
-
-
-### Model Performance
-
-- **R² Score:** 0.5703 (57.03% of variance explained)
-- **Cross-Validation:** 5-fold CV with mean R² of 0.5528
-- **Residual Analysis:** Normally distributed errors
-- **Prediction Range:** $75K - $5M (filtered dataset)
-
-
 ## 💾 Database Schema
 
 The application stores all predictions in a SQLite database
@@ -254,89 +209,6 @@ For developers who want to retrain the model:
 3. Restart the Flask server to load the updated model
 
 See the notebook for detailed training steps and parameter tuning options.
-
-
-## 🔌 API Reference
-
-### Base URLs
-
-- **Online (Production):** `http://3.24.151.146:5000`
-- **Local (Development):** `http://localhost:5000`
-
-### Endpoints
-
-#### GET `/`
-Returns the main HTML interface
-
-**URLs:**
-- Online: `http://3.24.151.146:5000/`
-- Local: `http://localhost:5000/`
-
-**Response:** HTML page with prediction form
-
----
-
-#### POST `/predict`
-Predicts house price based on property features
-
-**URLs:**
-- Online: `http://3.24.151.146:5000/predict`
-- Local: `http://localhost:5000/predict`
-
-**Request Headers:**
-```
-Content-Type: application/x-www-form-urlencoded
-```
-
-**Request Body (form-data):**
-| Parameter | Type | Required | Range |
-|-----------|------|----------|-------|
-| bedrooms | float | Yes | 1-10 |
-| bathrooms | float | Yes | 1-8 |
-| sqft_living | float | Yes | 500-15000 |
-| sqft_lot | float | Yes | 500-100000 |
-| floors | float | Yes | 1-4 |
-| yr_built | float | Yes | 1900-2025 |
-
----
-
-## ☁️ Deployment
-
-### Current Deployment
-
-The application is deployed on **AWS EC2** and accessible at:
-
-**🔗 URL:** [http://3.24.151.146:5000/](http://3.24.151.146:5000/)
-
-**Infrastructure:**
-- **Platform:** AWS EC2 (Elastic Compute Cloud)
-- **Instance Type:** Standard EC2 instance
-- **Operating System:** Linux
-- **Web Server:** Flask Development Server
-- **Public IP:** 3.24.151.146
-- **Port:** 5000
-
-
-**Access Methods:**
-1. **Web Interface:** Visit `http://3.24.151.146:5000/` in your browser
-2. **API Endpoint:** POST requests to `http://3.24.151.146:5000/predict`
-3. **cURL:** Use command-line tools for testing
-
-### Deployment Architecture
-
-```
-Internet
-    |
-    v
-AWS EC2 (3.24.151.146:5000)
-    |
-    +-- Flask Application
-    |       |
-    |       +-- Random Forest Model
-    |       +-- StandardScaler
-    |
-    +-- SQLite Database (predictions.db)
-```
 
 
 ## 📞 Contact
