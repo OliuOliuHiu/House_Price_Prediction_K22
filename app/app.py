@@ -179,9 +179,7 @@ def predict_batch():
             'success': False,
             'error': str(e)
         }), 400
-
-if __name__ == '__main__':
-    app.run(debug=True)
+    
 def save_record(input_data, predicted_price):
     try:
         conn = get_connection()
@@ -196,6 +194,5 @@ def save_record(input_data, predicted_price):
     except Exception as e:
         print(f"[!] Error saving to DB: {e}")
 
-
-# if __name__ == '__main__':
-#     app.run(debug=True)
+if __name__ == '__main__':
+    app.run(debug=True)
