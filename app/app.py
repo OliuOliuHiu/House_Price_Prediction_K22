@@ -3,8 +3,11 @@ import pickle
 import numpy as np
 import pandas as pd
 import os
+import json
+from database import get_connection, init_db
 
 app = Flask(__name__)
+init_db()
 
 # Configure upload folder
 UPLOAD_FOLDER = 'uploads'
@@ -16,8 +19,8 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # Load the trained model and scaler
-MODEL_PATH = 'model/model.pkl'
-SCALER_PATH = 'model/scaler.pkl'
+MODEL_PATH = os.path.join(os.path.dirname(__file__), '..', 'model', 'model.pkl')
+SCALER_PATH = os.path.join(os.path.dirname(__file__), '..', 'model', 'scaler.pkl')
 
 try:
     with open(MODEL_PATH, 'rb') as f:
@@ -62,6 +65,17 @@ def predict():
         
         # Make prediction
         prediction = model.predict(features_scaled)[0]
+
+                # Lưu vào DB
+        input_data = {
+            'bedrooms': bedrooms,
+            'bathrooms': bathrooms,
+            'sqft_living': sqft_living,
+            'sqft_lot': sqft_lot,
+            'floors': floors,
+            'yr_built': yr_built
+        }
+        save_record(input_data, prediction)
         
         return jsonify({
             'success': True,
@@ -168,3 +182,20 @@ def predict_batch():
 
 if __name__ == '__main__':
     app.run(debug=True)
+def save_record(input_data, predicted_price):
+    try:
+        conn = get_connection()
+        cursor = conn.cursor()
+        input_json = json.dumps(input_data)
+        cursor.execute('''
+            INSERT INTO predictions (input_data, predicted_price)
+            VALUES (?, ?)
+        ''', (input_json, float(predicted_price)))
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        print(f"[!] Error saving to DB: {e}")
+
+
+# if __name__ == '__main__':
+#     app.run(debug=True)
