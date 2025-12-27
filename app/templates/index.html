@@ -10,80 +10,196 @@
     <div class="container">
         <header>
             <h1>🏠 House Price Prediction</h1>
-            <p>Enter house details to predict the price</p>
+            <p>Predict house prices manually or upload a file for batch prediction</p>
         </header>
 
         <div class="content">
-            <form id="predictionForm">
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="bedrooms">Bedrooms</label>
-                        <input type="number" id="bedrooms" name="bedrooms" 
-                               min="1" max="5" step="1" value="3" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="bathrooms">Bathrooms</label>
-                        <input type="number" id="bathrooms" name="bathrooms" 
-                               min="1" max="5" step="1" value="2" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="sqft_living">Living Area (sqft)</label>
-                        <input type="number" id="sqft_living" name="sqft_living" 
-                               min="500" max="15000" step="10" value="2000" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="sqft_lot">Lot Size (sqft)</label>
-                        <input type="number" id="sqft_lot" name="sqft_lot" 
-                               min="500" max="100000" step="10" value="5000" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="floors">Floors</label>
-                        <input type="number" id="floors" name="floors" 
-                               min="1" max="4" step="0.5" value="1" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="yr_built">Year Built</label>
-                        <input type="number" id="yr_built" name="yr_built" 
-                               min="1900" max="2025" step="1" value="2000" required>
-                    </div>
-                </div>
-
-                <button type="submit" class="btn-predict">
-                    Predict Price
+            <!-- Mode Toggle -->
+            <div class="mode-toggle">
+                <button class="toggle-btn active" id="manualBtn" onclick="switchMode('manual')">
+                    ✍️ Manual Input
                 </button>
-            </form>
+                <button class="toggle-btn" id="batchBtn" onclick="switchMode('batch')">
+                    📤 File Upload
+                </button>
+            </div>
 
-            <div id="result" class="result hidden">
-                <h2>Predicted Price</h2>
-                <div class="price-display">
-                    <span class="currency">$</span>
-                    <span id="predictedPrice">0</span>
+            <!-- Manual Input Mode -->
+            <div id="manualMode" class="mode-section">
+                <form id="predictionForm">
+                    <div class="form-grid-3">
+                        <div class="form-group">
+                            <label for="bedrooms">Bedrooms</label>
+                            <input type="number" id="bedrooms" name="bedrooms" 
+                                   min="1" max="5" step="1" value="3" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="bathrooms">Bathrooms</label>
+                            <input type="number" id="bathrooms" name="bathrooms" 
+                                   min="1" max="5" step="1" value="2" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="sqft_living">Living Area (sqft)</label>
+                            <input type="number" id="sqft_living" name="sqft_living" 
+                                   min="500" max="15000" step="10" value="2000" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="sqft_lot">Lot Size (sqft)</label>
+                            <input type="number" id="sqft_lot" name="sqft_lot" 
+                                   min="500" max="100000" step="10" value="5000" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="floors">Floors</label>
+                            <input type="number" id="floors" name="floors" 
+                                   min="1" max="4" step="0.5" value="1" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="yr_built">Year Built</label>
+                            <input type="number" id="yr_built" name="yr_built" 
+                                   min="1900" max="2025" step="1" value="2000" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-predict">
+                        🔮 Predict
+                    </button>
+                </form>
+
+                <div id="manualResult" class="result hidden">
+                    <h2>Predicted Price</h2>
+                    <div class="price-display">
+                        <span class="currency">$</span>
+                        <span id="predictedPrice">0</span>
+                    </div>
                 </div>
             </div>
 
+            <!-- Batch Upload Mode -->
+            <div id="batchMode" class="mode-section hidden">
+                <!-- Upload Section -->
+                <div class="upload-section">
+                    <div class="upload-box" id="uploadBox">
+                        <div class="upload-icon">📁</div>
+                        <h3>Upload Your File</h3>
+                        <p>Drag and drop or click to browse</p>
+                        <p class="file-info">Accepted: Excel (.xlsx, .xls) or CSV (.csv)</p>
+                        <input type="file" id="fileInput" accept=".xlsx,.xls,.csv" hidden>
+                        <button class="btn-browse" onclick="document.getElementById('fileInput').click()">
+                            Browse Files
+                        </button>
+                    </div>
+                    
+                    <div id="fileInfo" class="file-info-display hidden">
+                        <div class="file-details">
+                            <span class="file-icon">📄</span>
+                            <div class="file-text">
+                                <strong id="fileName"></strong>
+                                <span id="fileSize"></span>
+                            </div>
+                            <button class="btn-remove" onclick="removeFile()">✕</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Required Columns Info -->
+                <div class="info-box">
+                    <h4>📋 Required Columns in Your File:</h4>
+                    <div class="columns-list">
+                        <span class="column-tag">bedrooms</span>
+                        <span class="column-tag">bathrooms</span>
+                        <span class="column-tag">sqft_living</span>
+                        <span class="column-tag">sqft_lot</span>
+                        <span class="column-tag">floors</span>
+                        <span class="column-tag">yr_built</span>
+                    </div>
+                </div>
+
+                <!-- Data Table -->
+                <div id="dataSection" class="data-section hidden">
+                    <div class="section-header">
+                        <h3>📊 Uploaded Data</h3>
+                        <span id="rowCount" class="row-count"></span>
+                    </div>
+                    <div class="table-wrapper">
+                        <table id="dataTable">
+                            <thead id="tableHead"></thead>
+                            <tbody id="tableBody"></tbody>
+                        </table>
+                    </div>
+                    
+                    <button class="btn-predict" id="predictBtn" onclick="predictPrices()">
+                        🔮 Predict 
+                    </button>
+                </div>
+
+                <!-- Results Section -->
+                <div id="resultsSection" class="results-section hidden">
+                    <div class="section-header">
+                        <h3>💰 Results</h3>
+                    </div>
+                    <div class="table-wrapper">
+                        <table id="resultsTable">
+                            <thead id="resultsHead"></thead>
+                            <tbody id="resultsBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Error Message -->
             <div id="error" class="error hidden"></div>
+
+            <!-- Loading Spinner -->
+            <div id="loading" class="loading hidden">
+                <div class="spinner"></div>
+                <p>Processing...</p>
+            </div>
         </div>
     </div>
 
     <script>
+        let uploadedData = null;
+        let currentMode = 'manual';
+
+        // Mode switching
+        function switchMode(mode) {
+            currentMode = mode;
+            const manualMode = document.getElementById('manualMode');
+            const batchMode = document.getElementById('batchMode');
+            const manualBtn = document.getElementById('manualBtn');
+            const batchBtn = document.getElementById('batchBtn');
+
+            if (mode === 'manual') {
+                manualMode.classList.remove('hidden');
+                batchMode.classList.add('hidden');
+                manualBtn.classList.add('active');
+                batchBtn.classList.remove('active');
+            } else {
+                manualMode.classList.add('hidden');
+                batchMode.classList.remove('hidden');
+                manualBtn.classList.remove('active');
+                batchBtn.classList.add('active');
+            }
+            hideError();
+        }
+
+        // Manual prediction
         const form = document.getElementById('predictionForm');
-        const resultDiv = document.getElementById('result');
-        const errorDiv = document.getElementById('error');
+        const manualResultDiv = document.getElementById('manualResult');
         const priceSpan = document.getElementById('predictedPrice');
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            // Hide previous results
-            resultDiv.classList.add('hidden');
-            errorDiv.classList.add('hidden');
+            manualResultDiv.classList.add('hidden');
+            hideError();
+            showLoading();
             
-            // Get form data
             const formData = new FormData(form);
             
             try {
@@ -95,22 +211,188 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    // Format and display price
                     const formattedPrice = new Intl.NumberFormat('en-US', {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2
                     }).format(data.predicted_price);
                     
                     priceSpan.textContent = formattedPrice;
-                    resultDiv.classList.remove('hidden');
+                    manualResultDiv.classList.remove('hidden');
                 } else {
                     throw new Error(data.error || 'Prediction failed');
                 }
             } catch (error) {
-                errorDiv.textContent = `Error: ${error.message}`;
-                errorDiv.classList.remove('hidden');
+                showError('Error: ' + error.message);
+            } finally {
+                hideLoading();
             }
         });
+
+        // Batch upload functionality
+        const uploadBox = document.getElementById('uploadBox');
+        const fileInput = document.getElementById('fileInput');
+
+        uploadBox.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadBox.classList.add('drag-over');
+        });
+
+        uploadBox.addEventListener('dragleave', () => {
+            uploadBox.classList.remove('drag-over');
+        });
+
+        uploadBox.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadBox.classList.remove('drag-over');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                handleFileUpload(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileUpload(e.target.files[0]);
+            }
+        });
+
+        async function handleFileUpload(file) {
+            hideError();
+            showLoading();
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    uploadedData = result.data;
+                    displayFileInfo(file);
+                    displayData(result.data, result.columns);
+                    document.getElementById('rowCount').textContent = `${result.row_count} rows`;
+                } else {
+                    showError(result.error || 'Upload failed');
+                }
+            } catch (error) {
+                showError('Error uploading file: ' + error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function displayFileInfo(file) {
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('fileSize').textContent = formatFileSize(file.size);
+            document.getElementById('fileInfo').classList.remove('hidden');
+            document.getElementById('uploadBox').style.display = 'none';
+        }
+
+        function removeFile() {
+            fileInput.value = '';
+            uploadedData = null;
+            document.getElementById('fileInfo').classList.add('hidden');
+            document.getElementById('uploadBox').style.display = 'flex';
+            document.getElementById('dataSection').classList.add('hidden');
+            document.getElementById('resultsSection').classList.add('hidden');
+            hideError();
+        }
+
+        function displayData(data, columns) {
+            const thead = document.getElementById('tableHead');
+            const tbody = document.getElementById('tableBody');
+
+            thead.innerHTML = '<tr>' + columns.map(col => `<th>${col}</th>`).join('') + '</tr>';
+            tbody.innerHTML = data.map(row => 
+                '<tr>' + columns.map(col => `<td>${row[col]}</td>`).join('') + '</tr>'
+            ).join('');
+
+            document.getElementById('dataSection').classList.remove('hidden');
+            document.getElementById('resultsSection').classList.add('hidden');
+        }
+
+        async function predictPrices() {
+            if (!uploadedData) {
+                showError('No data to predict');
+                return;
+            }
+
+            hideError();
+            showLoading();
+
+            try {
+                const response = await fetch('/predict_batch', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ data: uploadedData })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    displayResults(uploadedData, result.predictions);
+                } else {
+                    showError(result.error || 'Prediction failed');
+                }
+            } catch (error) {
+                showError('Error predicting prices: ' + error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function displayResults(data, predictions) {
+            const thead = document.getElementById('resultsHead');
+            const tbody = document.getElementById('resultsBody');
+
+            const columns = ['bedrooms', 'bathrooms', 'sqft_living', 'sqft_lot', 'floors', 'yr_built'];
+
+            thead.innerHTML = '<tr>' + 
+                columns.map(col => `<th>${col}</th>`).join('') + 
+                '<th class="prediction-col">Predicted Price ($)</th></tr>';
+
+            tbody.innerHTML = data.map((row, index) => 
+                '<tr>' + 
+                columns.map(col => `<td>${row[col]}</td>`).join('') + 
+                `<td class="prediction-cell">$${predictions[index].toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>` +
+                '</tr>'
+            ).join('');
+
+            document.getElementById('resultsSection').classList.remove('hidden');
+            document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
+        }
+
+        function hideError() {
+            document.getElementById('error').classList.add('hidden');
+        }
+
+        function showLoading() {
+            document.getElementById('loading').classList.remove('hidden');
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').classList.add('hidden');
+        }
     </script>
 </body>
 </html>
